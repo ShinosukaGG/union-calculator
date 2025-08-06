@@ -1,73 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Union Allocation Calculator</title>
-  <link href="https://fonts.googleapis.com/css?family=JetBrains+Mono:400,700|Supermolot:400,700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/svg+xml" href="union-logo.svg"/>
-  <link rel="stylesheet" href="styles.css" />
+  <!-- Fonts: JetBrains Mono + Supermolot -->
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/supermolot" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Header -->
-  <header>
+  <!-- Header (fixed) -->
+  <header class="header">
     <div class="header-content">
-      <img src="union-logo.svg" alt="Union Logo" class="union-logo"/>
-      <div class="header-title">Union Allocation Calculator</div>
+      <img src="union-logo.svg" alt="Union Logo" class="union-logo">
+      <span class="header-title">Union Allocation Calculator</span>
     </div>
   </header>
   
-  <main>
-    <!-- Search -->
-    <section class="search-section">
-      <form id="search-form">
-        <label for="username">Enter your X username</label>
-        <input type="text" id="username" placeholder="@username" autocomplete="off" required />
-        <button type="submit">Search</button>
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Landing Box -->
+    <section class="landing-box" id="landing-box">
+      <div class="landing-img-container">
+        <img src="union-landing.png" alt="Union Calculator" class="landing-img">
+      </div>
+      <h1 class="main-heading">Union Allocation Calculator</h1>
+      <p class="description">
+        This tool estimates your Union $U token allocation using public data from the Union leaderboard and mindshare datasets.<br>
+        All results are unofficial and may change based on future Union updates.
+      </p>
+      <form id="username-form" class="username-form">
+        <div class="username-input-wrap">
+          <span class="input-label">@</span>
+          <input type="text" id="username-input" placeholder="Enter your X username" autocomplete="off">
+        </div>
+        <button type="submit" id="calculate-btn" class="glow-btn">Calculate Your Allocation</button>
       </form>
-      <div id="form-error" class="form-error"></div>
     </section>
-
-    <!-- Result: User Info -->
-    <section id="user-section" class="user-section hidden">
-      <img id="user-pfp" src="" alt="User pfp" class="user-pfp"/>
-      <span id="user-username" class="user-username"></span>
-    </section>
-
-    <!-- Total Allocation -->
-    <section id="total-section" class="total-section hidden">
-      <div>Total Allocation: <span id="total-allocation">0</span> $U</div>
-    </section>
-
-    <!-- Allocation Tables -->
-    <section id="allocations-section" class="allocations-section hidden">
-      <div class="alloc-table">
-        <h2>Tester Allocation</h2>
-        <div id="tester-allocation" class="allocation-table"></div>
+    
+    <!-- Main Results (hidden until calculated) -->
+    <section class="result-section" id="result-section" style="display:none;">
+      <!-- Confetti Canvas -->
+      <canvas id="confetti-canvas"></canvas>
+      
+      <!-- Profile Box -->
+      <div class="profile-box">
+        <img src="" alt="User Profile Picture" class="profile-pfp" id="profile-pfp">
+        <span class="profile-username" id="profile-username"></span>
       </div>
-      <div class="alloc-table">
-        <h2>Yapper Season 0 Allocation</h2>
-        <div id="yapper0-allocation" class="allocation-table"></div>
+      
+      <!-- Allocation Box -->
+      <div class="allocation-box">
+        <span class="allocation-amount" id="allocation-amount"></span>
+        <span class="allocation-desc">Testers + Yappers (s0+1)</span>
       </div>
-      <div class="alloc-table">
-        <h2>Yapper Season 1 Allocation</h2>
-        <div id="yapper1-allocation" class="allocation-table"></div>
+      
+      <!-- Tweet Button -->
+      <button class="tweet-btn" id="tweet-btn">
+        Share your allocation on X
+      </button>
+      
+      <!-- Allocation Tables -->
+      <div class="tables-section">
+        <!-- Tester Allocation Table -->
+        <div class="allocation-table" id="tester-table">
+          <!-- Fills dynamically with JS -->
+        </div>
+        <!-- Yapper S0 Allocation Table -->
+        <div class="allocation-table" id="yapper-s0-table">
+          <!-- Fills dynamically with JS -->
+        </div>
+        <!-- Yapper S1 Allocation Table -->
+        <div class="allocation-table" id="yapper-s1-table">
+          <!-- Fills dynamically with JS -->
+        </div>
       </div>
-    </section>
-
-    <!-- Share Button -->
-    <section id="share-section" class="share-section hidden">
-      <button id="share-btn">Share Your Allocation on X</button>
     </section>
   </main>
   
-  <!-- Footer -->
-  <footer>
-    <div class="footer-content">
-      All allocations are calculated using available data and formulas, and may not be 100% accurate.
-    </div>
+  <!-- Footer (fixed) -->
+  <footer class="footer">
+    <span>
+      All these calculations are based on the official data shared by Union and may change.
+    </span>
   </footer>
   
   <script src="script.js"></script>
 </body>
-    </html>
+</html>
