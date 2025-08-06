@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Union Allocation Calculator</title>
+  <link href="https://fonts.googleapis.com/css?family=JetBrains+Mono:400,700|Supermolot:400,700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="union-logo.svg"/>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <img src="union-logo.svg" alt="Union Logo" class="union-logo"/>
+      <div class="header-title">Union Allocation Calculator</div>
+    </div>
+  </header>
+  
+  <main>
+    <!-- Search -->
+    <section class="search-section">
+      <form id="search-form">
+        <label for="username">Enter your X username</label>
+        <input type="text" id="username" placeholder="@username" autocomplete="off" required />
+        <button type="submit">Search</button>
+      </form>
+      <div id="form-error" class="form-error"></div>
+    </section>
+
+    <!-- Result: User Info -->
+    <section id="user-section" class="user-section hidden">
+      <img id="user-pfp" src="" alt="User pfp" class="user-pfp"/>
+      <span id="user-username" class="user-username"></span>
+    </section>
+
+    <!-- Total Allocation -->
+    <section id="total-section" class="total-section hidden">
+      <div>Total Allocation: <span id="total-allocation">0</span> $U</div>
+    </section>
+
+    <!-- Allocation Tables -->
+    <section id="allocations-section" class="allocations-section hidden">
+      <div class="alloc-table">
+        <h2>Tester Allocation</h2>
+        <div id="tester-allocation" class="allocation-table"></div>
+      </div>
+      <div class="alloc-table">
+        <h2>Yapper Season 0 Allocation</h2>
+        <div id="yapper0-allocation" class="allocation-table"></div>
+      </div>
+      <div class="alloc-table">
+        <h2>Yapper Season 1 Allocation</h2>
+        <div id="yapper1-allocation" class="allocation-table"></div>
+      </div>
+    </section>
+
+    <!-- Share Button -->
+    <section id="share-section" class="share-section hidden">
+      <button id="share-btn">Share Your Allocation on X</button>
+    </section>
+  </main>
+  
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      All allocations are calculated using available data and formulas, and may not be 100% accurate.
+    </div>
+  </footer>
+  
+  <script src="script.js"></script>
+</body>
+    </html>
