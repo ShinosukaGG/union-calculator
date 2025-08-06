@@ -172,8 +172,7 @@ async function fetchMindshare(table, username) {
     }
     if (typeof mindshareVal === 'string') mindshareVal = mindshareVal.replace('%', '').trim();
     if (mindshareVal !== null && !isNaN(mindshareVal)) {
-      let num = parseFloat(mindshareVal);
-      if (num < 1) return (num * 100).toFixed(2); // Sometimes 0.xx stored as fraction
+      let num = parseFloat(mindshareVal); // Sometimes 0.xx stored as fraction
       return num.toFixed(2);
     } else if (mindshareVal !== null) {
       let num = parseFloat(String(mindshareVal).replace(',', '.'));
