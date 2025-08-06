@@ -287,7 +287,7 @@ At the bull case FDV this can be life changing.
 
 Go Calculate Yours: union-calculator.vercel.app
 
-#UnionAllocation`;
+https://x.com/Shinosuka_eth/status/1953123529987350583`;
       const tweetIntent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`;
       window.open(tweetIntent, "_blank");
     };
