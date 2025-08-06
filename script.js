@@ -151,6 +151,7 @@ async function fetchUserData(username) {
 }
 
 // Mindshare from yapper S0/S1
+// Mindshare from yapper S0/S1
 async function fetchMindshare(table, username) {
   let url = `${SUPABASE_URL}/${table}?username=eq.${encodeURIComponent(username)}`;
   let res = await fetch(url, { headers: { 'apikey': SUPABASE_APIKEY } });
@@ -172,7 +173,8 @@ async function fetchMindshare(table, username) {
     }
     if (typeof mindshareVal === 'string') mindshareVal = mindshareVal.replace('%', '').trim();
     if (mindshareVal !== null && !isNaN(mindshareVal)) {
-      let num = parseFloat(mindshareVal); // Sometimes 0.xx stored as fraction
+      let num = parseFloat(mindshareVal);
+      // DO NOT multiply by 100!
       return num.toFixed(2);
     } else if (mindshareVal !== null) {
       let num = parseFloat(String(mindshareVal).replace(',', '.'));
