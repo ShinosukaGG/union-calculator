@@ -4,10 +4,10 @@ const SUPABASE_URL = 'https://bvvlqbtwqetltdcvioie.supabase.co/rest/v1';
 
 // ===== Brand Emojis for each case (replace with URLs if needed) ====
 const CASE_ICONS = [
-  "https://em-content.zobj.net/source/apple/354/man-office-worker_1f468-200d-1f4bc.png", // Ideal
-  "https://em-content.zobj.net/source/apple/354/man-office-worker_1f468-200d-1f4bc.png", // Bull
-  "https://em-content.zobj.net/source/apple/354/man-office-worker_1f468-200d-1f4bc.png", // Super Bull
-  "https://em-content.zobj.net/source/apple/354/man-office-worker_1f468-200d-1f4bc.png"  // Giga Bull
+  "allo2.png", // Ideal
+  "allo3.png", // Bull
+  "allo4.png", // Super Bull
+  "allo5.png"  // Giga Bull
 ];
 
 // ==== Allocation constants (levels, pools, XP, users) ====
