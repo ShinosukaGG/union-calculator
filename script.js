@@ -171,15 +171,15 @@ async function fetchMindshare(table, username) {
         if (json.mindshare !== undefined && json.mindshare !== null) mindshareVal = json.mindshare;
       } catch (e) {}
     }
-    // Top-level fallback
     if (!mindshareVal && found.mindshare !== undefined && found.mindshare !== null) {
       mindshareVal = found.mindshare;
     }
     if (typeof mindshareVal === 'string') mindshareVal = mindshareVal.replace('%', '').trim();
     if (mindshareVal !== null && !isNaN(mindshareVal)) {
       let num = parseFloat(mindshareVal);
-      // DO NOT multiply by 100
-      return num.toFixed(2); // For display (e.g. "0.65" → "0.65%")
+      // Handle Season 1 as fraction needing ×100, Season 0 as already percent
+      if (table === 'yaps_season_one') return (num * 100).toFixed(2);    // e.g. 0.0065 → 0.65
+      else return num.toFixed(2);                                        // e.g. 0.65 → 0.65
     }
   }
   return '0.00';
