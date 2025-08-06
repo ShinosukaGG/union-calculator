@@ -171,14 +171,15 @@ async function fetchMindshare(table, username) {
         if (json.mindshare !== undefined && json.mindshare !== null) mindshareVal = json.mindshare;
       } catch (e) {}
     }
+    // Top-level fallback
+    if (!mindshareVal && found.mindshare !== undefined && found.mindshare !== null) {
+      mindshareVal = found.mindshare;
+    }
     if (typeof mindshareVal === 'string') mindshareVal = mindshareVal.replace('%', '').trim();
     if (mindshareVal !== null && !isNaN(mindshareVal)) {
       let num = parseFloat(mindshareVal);
-      // DO NOT multiply by 100!
-      return num.toFixed(2);
-    } else if (mindshareVal !== null) {
-      let num = parseFloat(String(mindshareVal).replace(',', '.'));
-      if (!isNaN(num)) return num.toFixed(2);
+      // DO NOT multiply by 100
+      return num.toFixed(2); // For display (e.g. "0.65" → "0.65%")
     }
   }
   return '0.00';
