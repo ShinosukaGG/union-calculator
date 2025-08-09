@@ -2,37 +2,40 @@
 const SUPABASE_APIKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2dmxxYnR3cWV0bHRkY3Zpb2llIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwMjM4MzMsImV4cCI6MjA2OTU5OTgzM30.d-leDFpzc6uxDvq47_FC0Fqh0ztaL11Oozm-z6T9N_M';
 const SUPABASE_URL = 'https://bvvlqbtwqetltdcvioie.supabase.co/rest/v1';
 
-// ===== Brand Emojis for each case (replace with URLs if needed) ====
+// ==== Brand Emojis for each case (replace with your own if needed) ====
 const CASE_ICONS = [
-  "allo2.png", // Ideal
-  "allo3.png", // Bull
-  "allo4.png", // Super Bull
-  "allo5.png"  // Giga Bull
+  "https://em-content.zobj.net/source/apple/354/man-office-worker_1f468-200d-1f4bc.png", // Ideal
+  "https://em-content.zobj.net/source/apple/354/man-office-worker_1f468-200d-1f4bc.png", // Bull
+  "https://em-content.zobj.net/source/apple/354/man-office-worker_1f468-200d-1f4bc.png", // Super Bull
+  "https://em-content.zobj.net/source/apple/354/man-office-worker_1f468-200d-1f4bc.png"  // Giga Bull
 ];
 
 // ==== Allocation constants (levels, pools, XP, users) ====
 const LEVELS = [
-  { level: 10, label: "Top 100", min: 1155, max: 20000, users: 100, pool: 25000000 },
-  { level: 9,  label: "Sr. Lt & Up", min: 955, max: 1154, users: 440, pool: 45000000 },
-  { level: 8,  label: "Lieutenant", min: 780, max: 954, users: 3090, pool: 85000000 },
-  { level: 7,  label: "Junior Lt", min: 630, max: 779, users: 9570, pool: 100000000 },
-  { level: 6,  label: "Starshina", min: 455, max: 629, users: 45120, pool: 165000000 },
-  { level: 5,  label: "Sr. Sgt", min: 300, max: 454, users: 23250, pool: 50000000 },
-  { level: 4,  label: "Sgt", min: 150, max: 299, users: 27270, pool: 30000000 }
+  { level: 10, label: "Top 100",   min: 1155, max: 20000, users: 100,   pool:  25_000_000 },
+  { level: 9,  label: "Sr. Lt & Up", min: 955, max: 1154,  users: 440,   pool:  45_000_000 },
+  { level: 8,  label: "Lieutenant",  min: 780, max: 954,   users: 3090,  pool:  85_000_000 },
+  { level: 7,  label: "Junior Lt",   min: 630, max: 779,   users: 9570,  pool: 100_000_000 },
+  { level: 6,  label: "Starshina",   min: 455, max: 629,   users: 45120, pool: 165_000_000 },
+  { level: 5,  label: "Sr. Sgt",     min: 300, max: 454,   users: 23250, pool:  50_000_000 },
+  { level: 4,  label: "Sgt",         min: 150, max: 299,   users: 27270, pool:  30_000_000 }
 ];
 
 // ==== Yapper Pool Constants ====
-const YAPPER_S0_POOL = 45000000;
-const YAPPER_S1_POOL = 30000000;
+const YAPPER_S0_POOL = 45_000_000; // 0.45% of 10B
+const YAPPER_S1_POOL = 30_000_000; // 0.3% of 10B
 const FDV_CASES = [
-  { label: "Ideal Case", range: "$500M–$750M", usd: [0.05, 0.075] },
-  { label: "Bull Case", range: "$750M–$1B", usd: [0.075, 0.10] },
-  { label: "Super Bull", range: "$1.2B–$1.7B", usd: [0.12, 0.17] },
-  { label: "Giga Bull", range: "$1.7B–$2.5B", usd: [0.17, 0.20] }
+  { label: "Ideal Case", range: "$500M–$750M",    usd: [0.05, 0.075] },
+  { label: "Bull Case",  range: "$750M–$1B",      usd: [0.075, 0.10] },
+  { label: "Super Bull", range: "$1.2B–$1.7B",    usd: [0.12, 0.17] },
+  { label: "Giga Bull",  range: "$1.7B–$2.5B",    usd: [0.17, 0.20] }
 ];
 
+// ==== Display precision for mindshare ====
+const MIND_MAX_DECIMALS = 8;
+
 // ==== Confetti Setup ====
-function launchConfetti(duration = 4000) {
+function launchConfetti(duration = 5000) {
   const canvas = document.getElementById("confetti-canvas");
   if (!canvas) return;
   canvas.width = window.innerWidth;
@@ -91,27 +94,32 @@ function launchConfetti(duration = 4000) {
   }, duration);
 }
 
-// ==== Utility: Format number ====
+// ==== Utilities ====
 function formatNumber(num) {
   if (!num) return '0';
   if (num >= 1e6) return (num / 1e6).toFixed(1).replace(/\.0$/, '') + "M";
   if (num >= 1e3) return (num / 1e3).toFixed(0) + "K";
-  return num.toLocaleString();
+  return Number(num).toLocaleString();
 }
 
-// ==== Utility: Format $ Range ====
 function formatUsdRange(tokenAmount, [min, max]) {
   return `~$${Math.round(tokenAmount * min).toLocaleString()}–$${Math.round(tokenAmount * max).toLocaleString()}`;
 }
 
-// ==== Fetch Functions ====
+// Show mindshare with many decimals, no forced rounding to 2dp
+function formatMindshare(ms) {
+  if (ms == null || ms === '') return '0';
+  const n = Number(ms);
+  if (Number.isNaN(n)) return String(ms);
+  return n.toLocaleString(undefined, { maximumFractionDigits: MIND_MAX_DECIMALS });
+}
 
-// Search user in leaderboard (multiple strategies)
+// ==== Fetch: Leaderboard user (multi-strategy) ====
 async function fetchUserData(username) {
   let user = null, url, response, users;
   // 1. display_name ilike (exact)
   url = `${SUPABASE_URL}/leaderboard_full_0208?display_name=ilike.${username}`;
-  response = await fetch(url, { headers: { 'apikey': SUPABASE_APIKEY } });
+  response = await fetch(url, { headers: { 'apikey': SUPABASE_APIKEY, 'Authorization': `Bearer ${SUPABASE_APIKEY}` } });
   if (response.ok) {
     users = await response.json();
     if (users && users.length > 0) {
@@ -121,7 +129,7 @@ async function fetchUserData(username) {
   // 2. username ilike (exact)
   if (!user) {
     url = `${SUPABASE_URL}/leaderboard_full_0208?username=ilike.${username}`;
-    response = await fetch(url, { headers: { 'apikey': SUPABASE_APIKEY } });
+    response = await fetch(url, { headers: { 'apikey': SUPABASE_APIKEY, 'Authorization': `Bearer ${SUPABASE_APIKEY}` } });
     if (response.ok) {
       users = await response.json();
       if (users && users.length > 0) {
@@ -132,7 +140,7 @@ async function fetchUserData(username) {
   // 3. display_name ilike (partial)
   if (!user) {
     url = `${SUPABASE_URL}/leaderboard_full_0208?display_name=ilike.%${username}%`;
-    response = await fetch(url, { headers: { 'apikey': SUPABASE_APIKEY } });
+    response = await fetch(url, { headers: { 'apikey': SUPABASE_APIKEY, 'Authorization': `Bearer ${SUPABASE_APIKEY}` } });
     if (response.ok) {
       users = await response.json();
       if (users && users.length > 0) user = users[0];
@@ -141,7 +149,7 @@ async function fetchUserData(username) {
   // 4. username ilike (partial)
   if (!user) {
     url = `${SUPABASE_URL}/leaderboard_full_0208?username=ilike.%${username}%`;
-    response = await fetch(url, { headers: { 'apikey': SUPABASE_APIKEY } });
+    response = await fetch(url, { headers: { 'apikey': SUPABASE_APIKEY, 'Authorization': `Bearer ${SUPABASE_APIKEY}` } });
     if (response.ok) {
       users = await response.json();
       if (users && users.length > 0) user = users[0];
@@ -150,20 +158,20 @@ async function fetchUserData(username) {
   return user;
 }
 
-// Mindshare from yapper S0/S1
-// Mindshare from yapper S0/S1
+// ==== Fetch: Mindshare (S0: already percent; S1: fraction → ×100) ====
 async function fetchMindshare(table, username) {
   let url = `${SUPABASE_URL}/${table}?username=eq.${encodeURIComponent(username)}`;
-  let res = await fetch(url, { headers: { 'apikey': SUPABASE_APIKEY } });
+  let res = await fetch(url, { headers: { 'apikey': SUPABASE_APIKEY, 'Authorization': `Bearer ${SUPABASE_APIKEY}` } });
   let data = (res.ok) ? await res.json() : [];
   if (!data || data.length === 0) {
     url = `${SUPABASE_URL}/${table}?username=ilike.%25${encodeURIComponent(username)}%25`;
-    res = await fetch(url, { headers: { 'apikey': SUPABASE_APIKEY } });
+    res = await fetch(url, { headers: { 'apikey': SUPABASE_APIKEY, 'Authorization': `Bearer ${SUPABASE_APIKEY}` } });
     data = (res.ok) ? await res.json() : [];
   }
   if (data && data.length > 0) {
     let found = data.find(d => (d.username || '').toLowerCase() === username.toLowerCase());
     if (!found) found = data[0];
+
     let mindshareVal = null;
     if (found && found.jsonInput) {
       try {
@@ -171,40 +179,50 @@ async function fetchMindshare(table, username) {
         if (json.mindshare !== undefined && json.mindshare !== null) mindshareVal = json.mindshare;
       } catch (e) {}
     }
-    if (!mindshareVal && found.mindshare !== undefined && found.mindshare !== null) {
+    // Top-level fallback
+    if (mindshareVal == null && found.mindshare !== undefined && found.mindshare !== null) {
       mindshareVal = found.mindshare;
     }
+
+    if (mindshareVal == null) return 0;
+
+    // Normalize string
     if (typeof mindshareVal === 'string') mindshareVal = mindshareVal.replace('%', '').trim();
-    if (mindshareVal !== null && !isNaN(mindshareVal)) {
-      let num = parseFloat(mindshareVal);
-      // Handle Season 1 as fraction needing ×100, Season 0 as already percent
-      if (table === 'yaps_season_one') return (num * 100).toFixed(2);    // e.g. 0.0065 → 0.65
-      else return num.toFixed(2);                                        // e.g. 0.65 → 0.65
+    const num = Number(String(mindshareVal).replace(',', '.'));
+    if (Number.isNaN(num)) return 0;
+
+    // IMPORTANT: S1 requires ×100 (stored as fraction), S0 is already percent
+    if (table === 'yaps_season_one') {
+      return num * 100; // keep full precision for display
+    } else {
+      return num;       // already percent, no ×100
     }
   }
-  return '0.00';
+  return 0;
 }
 
 // ==== TESTER ALLOCATION CALC ====
 function calculateTesterAllocation(level, userXP) {
-  if (level == 10) return 250000; // Equal share
-  const lvl = LEVELS.find(l => l.level === level);
+  if (Number(level) === 10) return 250_000; // Equal share per spec
+  const lvl = LEVELS.find(l => l.level === Number(level));
   if (!lvl || !userXP || isNaN(userXP)) return 0;
+
   let XP_score = (userXP - lvl.min) / (lvl.max - lvl.min);
   XP_score = Math.max(0, Math.min(1, XP_score));
-  // Linear scaling (min gets 0.5x avg, max gets 1.5x avg, sum checks out)
+
+  // Linear scaling around avg: 0.5x at min → 1.5x at max
   const avg = lvl.pool / lvl.users;
-  const userToken = ((XP_score * 1 + 0.5) * avg); // Scales from 0.5x to 1.5x avg
+  const userToken = ((XP_score * 1 + 0.5) * avg); // from 0.5*avg to 1.5*avg
   return Math.round(userToken);
 }
 
-// ==== YAPPER ALLOCATION ====
-function calculateYapperAllocation(mindshare, pool) {
-  if (!mindshare || isNaN(Number(mindshare))) return 0;
-  return Math.round((parseFloat(mindshare) / 100) * pool);
+// ==== YAPPER ALLOCATION (mindshare is percent value, e.g. 0.65 means 0.65%) ====
+function calculateYapperAllocation(mindsharePercent, pool) {
+  if (mindsharePercent == null || isNaN(Number(mindsharePercent))) return 0;
+  return Math.round((Number(mindsharePercent) / 100) * pool);
 }
 
-// ==== Main Event ====
+// ==== MAIN ====
 document.addEventListener('DOMContentLoaded', function () {
   // DOM
   const landingBox = document.getElementById('landing-box');
@@ -219,9 +237,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const testerTable = document.getElementById('tester-table');
   const yapperS0Table = document.getElementById('yapper-s0-table');
   const yapperS1Table = document.getElementById('yapper-s1-table');
-  const confettiCanvas = document.getElementById('confetti-canvas');
 
-  // === MAIN FORM EVENT ===
+  // FORM
   usernameForm.addEventListener('submit', async function (e) {
     e.preventDefault();
     let uname = usernameInput.value.trim().replace(/^@/, "");
@@ -231,7 +248,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     calcBtn.disabled = true;
     calcBtn.innerText = "Calculating...";
-    // Fetch data
+
+    // Fetch user
     let user = await fetchUserData(uname);
     if (!user) {
       alert('User not found.');
@@ -239,73 +257,54 @@ document.addEventListener('DOMContentLoaded', function () {
       calcBtn.innerText = "Calculate Your Allocation";
       return;
     }
-    // Username/Display
+
     const xusername = (user.username || user.display_name || uname);
-    // PFP
+
+    // PFP & meta
     let pfp = user.pfp;
-    if (user.jsonInput) {
-      try {
-        const json = typeof user.jsonInput === 'string' ? JSON.parse(user.jsonInput) : user.jsonInput;
-        pfp = json.pfp || pfp;
-      } catch (e) {}
-    }
-    profilePfp.src = pfp || "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png";
-    profileUsername.textContent = "@" + xusername;
-    // XP, Level, Title
     let xp = user.total_xp;
     let level = user.level;
     let title = user.title;
     if (user.jsonInput) {
       try {
         const json = typeof user.jsonInput === 'string' ? JSON.parse(user.jsonInput) : user.jsonInput;
+        pfp = json.pfp || pfp;
         xp = json.total_xp || xp;
         level = json.level || level;
         title = json.title || title;
       } catch (e) {}
     }
-    // Mindshare (Yapper S0, S1)
-    const mindshareS0 = await fetchMindshare('yaps_season_zero', xusername);
-    const mindshareS1 = await fetchMindshare('yaps_season_one', xusername);
+    profilePfp.src = pfp || "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png";
+    profileUsername.textContent = "@" + xusername;
+
+    // Mindshare
+    const mindshareS0 = await fetchMindshare('yaps_season_zero', xusername); // already percent
+    const mindshareS1 = await fetchMindshare('yaps_season_one', xusername);  // fraction → ×100 inside fetch
 
     // Allocations
-    let testerAllocation = (level && xp) ? calculateTesterAllocation(Number(level), Number(xp)) : 0;
-    let yapperAllocationS0 = calculateYapperAllocation(mindshareS0, YAPPER_S0_POOL);
-    let yapperAllocationS1 = calculateYapperAllocation(mindshareS1, YAPPER_S1_POOL);
-    let totalAllocation = testerAllocation + yapperAllocationS0 + yapperAllocationS1;
+    const testerAllocation = (level && xp) ? calculateTesterAllocation(Number(level), Number(xp)) : 0;
+    const yapperAllocationS0 = calculateYapperAllocation(mindshareS0, YAPPER_S0_POOL);
+    const yapperAllocationS1 = calculateYapperAllocation(mindshareS1, YAPPER_S1_POOL);
+    const totalAllocation = testerAllocation + yapperAllocationS0 + yapperAllocationS1;
 
-    // === Render
+    // Render totals
     allocationAmount.innerHTML = `Your Union Allocation is <span style="color:#A9ECFD">${formatNumber(totalAllocation)}</span> $U`;
-    // Show allocation amount nicely
     allocationAmount.style.fontWeight = 'bold';
-
-    // === Tweet Btn logic ===
-    tweetBtn.onclick = function() {
-      const tweet = `Just calculated my Tester + Yapper allocation for @union_build 🎊
-
-My allocation: ${formatNumber(totalAllocation)} $U 💰
-At the bull case FDV this can be life changing.
-
-Go Calculate Yours: union-calculator.vercel.app
-
-https://x.com/Shinosuka_eth/status/1953123529987350583`;
-      const tweetIntent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`;
-      window.open(tweetIntent, "_blank");
-    };
 
     // Tester Table
     testerTable.innerHTML = `
       <h2>Tester Allocation</h2>
-      <div class="case-row"><span class="case-label">Level:</span> ${level || "-"} (${title || "—"})</div>
-      <div class="case-row"><span class="case-label">XP:</span> ${xp || "-"} </div>
+      <div class="case-row"><span class="case-label">Level:</span> ${level ?? "-"} (${title ?? "—"})</div>
+      <div class="case-row"><span class="case-label">XP:</span> ${xp ?? "-"}</div>
       <div class="case-row"><span class="case-label">Your Tester Allocation:</span>
         <span class="case-range">${formatNumber(testerAllocation)} $U</span>
       </div>
     `;
 
-    // Yapper S0 Table
+    // Yapper S0 Table (display full precision)
     yapperS0Table.innerHTML = `
       <h2>Season 0 Allocation</h2>
-      <div class="case-row"><span class="case-label">Mindshare:</span> ${mindshareS0 || "0"}%</div>
+      <div class="case-row"><span class="case-label">Mindshare:</span> ${formatMindshare(mindshareS0)}%</div>
       <div class="case-row"><span class="case-label">Your S0 Yapper Allocation:</span>
         <span class="case-range">${formatNumber(yapperAllocationS0)} $U</span>
       </div>
@@ -318,10 +317,10 @@ https://x.com/Shinosuka_eth/status/1953123529987350583`;
       </div>`).join("")}
     `;
 
-    // Yapper S1 Table
+    // Yapper S1 Table (display full precision, after ×100 conversion)
     yapperS1Table.innerHTML = `
       <h2>Season 1 Allocation</h2>
-      <div class="case-row"><span class="case-label">Mindshare:</span> ${mindshareS1 || "0"}%</div>
+      <div class="case-row"><span class="case-label">Mindshare:</span> ${formatMindshare(mindshareS1)}%</div>
       <div class="case-row"><span class="case-label">Your S1 Yapper Allocation:</span>
         <span class="case-range">${formatNumber(yapperAllocationS1)} $U</span>
       </div>
@@ -334,24 +333,43 @@ https://x.com/Shinosuka_eth/status/1953123529987350583`;
       </div>`).join("")}
     `;
 
-    // Show/hide views
+    // Switch views & confetti
     landingBox.style.display = 'none';
     resultSection.style.display = 'flex';
-
-    // Launch confetti for 5 seconds!
     launchConfetti(5000);
 
-    // Reset button
+    // Tweet intent
+    tweetBtn.onclick = function() {
+      const tweet = `Just calculated my Tester + Yapper allocation for @union_build 🎊
+
+My allocation: ${formatNumber(totalAllocation)} $U 💰
+At the bull case FDV this can be life changing.
+
+Go Calculate Yours: union-calculator.vercel.app
+
+#UnionAllocation`;
+      const tweetIntent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`;
+      window.open(tweetIntent, "_blank");
+    };
+
+    // Reset btn
     calcBtn.disabled = false;
     calcBtn.innerText = "Calculate Your Allocation";
   });
 
-  // Remove error class on focus
-  usernameInput.addEventListener('focus', () => {
-    usernameInput.classList.remove('error');
-  });
+  // Input cleanup
+  const usernameInputEl = document.getElementById('username-input');
+  if (usernameInputEl) {
+    usernameInputEl.addEventListener('input', () => {
+      // Strip leading @ dynamically
+      usernameInputEl.value = usernameInputEl.value.replace(/^@/, '');
+    });
+    usernameInputEl.addEventListener('focus', () => {
+      usernameInputEl.classList.remove('error');
+    });
+  }
 
-  // Responsive confetti canvas resize
+  // Confetti canvas resize
   window.addEventListener('resize', () => {
     const canvas = document.getElementById("confetti-canvas");
     if (canvas && canvas.style.display !== "none") {
