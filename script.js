@@ -192,7 +192,7 @@ async function fetchMindshare(table, username) {
     if (Number.isNaN(num)) return 0;
 
     // IMPORTANT: S1 requires ×100 (stored as fraction), S0 is already percent
-    if (table === 'yaps_season_one') {
+    if (table === 'yaps_season_1_public') {
       return num * 100; // keep full precision for display
     } else {
       return num;       // already percent, no ×100
@@ -278,8 +278,8 @@ document.addEventListener('DOMContentLoaded', function () {
     profileUsername.textContent = "@" + xusername;
 
     // Mindshare
-    const mindshareS0 = await fetchMindshare('yaps_season_zero', xusername); // already percent
-    const mindshareS1 = await fetchMindshare('yaps_season_one', xusername);  // fraction → ×100 inside fetch
+    const mindshareS0 = await fetchMindshare('yaps_season_0_public', xusername); // already percent
+    const mindshareS1 = await fetchMindshare('yaps_season_1_public', xusername);  // fraction → ×100 inside fetch
 
     // Allocations
     const testerAllocation = (level && xp) ? calculateTesterAllocation(Number(level), Number(xp)) : 0;
@@ -320,61 +320,4 @@ document.addEventListener('DOMContentLoaded', function () {
     // Yapper S1 Table (display full precision, after ×100 conversion)
     yapperS1Table.innerHTML = `
       <h2>Season 1 Allocation</h2>
-      <div class="case-row"><span class="case-label">Mindshare:</span> ${formatMindshare(mindshareS1)}%</div>
-      <div class="case-row"><span class="case-label">Your S1 Yapper Allocation:</span>
-        <span class="case-range">${formatNumber(yapperAllocationS1)} $U</span>
-      </div>
-      ${FDV_CASES.map((c, i) => `
-      <div class="case-row">
-        <img class="case-emoji" src="${CASE_ICONS[i]}" alt="">
-        <span class="case-label">${c.label}</span>
-        <span class="case-fdv">${c.range}</span>
-        <span class="case-range">${formatUsdRange(yapperAllocationS1, c.usd)}</span>
-      </div>`).join("")}
-    `;
-
-    // Switch views & confetti
-    landingBox.style.display = 'none';
-    resultSection.style.display = 'flex';
-    launchConfetti(5000);
-
-    // Tweet intent
-    tweetBtn.onclick = function() {
-      const tweet = `Just calculated my Tester + Yapper allocation for @union_build 🎊
-
-My allocation: ${formatNumber(totalAllocation)} $U 💰
-At the bull case FDV this can be life changing.
-
-Go Calculate Yours: union-calculator.vercel.app
-
-#UnionAllocation`;
-      const tweetIntent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`;
-      window.open(tweetIntent, "_blank");
-    };
-
-    // Reset btn
-    calcBtn.disabled = false;
-    calcBtn.innerText = "Calculate Your Allocation";
-  });
-
-  // Input cleanup
-  const usernameInputEl = document.getElementById('username-input');
-  if (usernameInputEl) {
-    usernameInputEl.addEventListener('input', () => {
-      // Strip leading @ dynamically
-      usernameInputEl.value = usernameInputEl.value.replace(/^@/, '');
-    });
-    usernameInputEl.addEventListener('focus', () => {
-      usernameInputEl.classList.remove('error');
-    });
-  }
-
-  // Confetti canvas resize
-  window.addEventListener('resize', () => {
-    const canvas = document.getElementById("confetti-canvas");
-    if (canvas && canvas.style.display !== "none") {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-  });
-});
+      <div class="case-row"><span class="case-label">Mindshare:</span> ${formatMindshare(mindshareS1)}%</
